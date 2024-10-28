@@ -39,14 +39,12 @@ export const getUserNotificationToken = async (userId: string) => {
     .single();
 
   if (error) throw new Error(error.message);
-  console.log("getusertokendata:", data);
 
   return data;
 };
 
 export const sendNotification = async (userId: string, status: string) => {
   const tokenData = await getUserNotificationToken(userId);
-  console.log(tokenData);
 
   if (!tokenData.expo_notification_token) {
     return;

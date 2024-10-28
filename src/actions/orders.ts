@@ -31,9 +31,19 @@ export const updateOrderStatus = async (orderId: number, status: string) => {
     throw new Error("Session not found. User might be logged out.");
   }
 
-  const userId = data.session.user.id;
+  const { data: orderData, error: orderError } = await supabase
+    .from("order")
+    .select("user")
+    .eq("id", orderId)
+    .single();
 
-  await sendNotification(userId, status + " 🚀");
+  if (orderError || !orderData) {
+    throw new Error("Order not found or failed to retrieve user ID.");
+  }
+
+  const customerId = orderData.user;
+
+  await sendNotification(customerId, status + " 🚀");
 
   revalidatePath("/admin/orders");
 };
