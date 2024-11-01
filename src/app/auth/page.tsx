@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { authenticate } from "../../actions/auth";
 
@@ -41,8 +42,14 @@ export default function Auth() {
     setIsAuthenticating(true);
 
     try {
-      await authenticate(email, password);
-      router.push("/admin");
+      const isAdmin = await authenticate(email, password);
+      if (isAdmin) {
+        router.push("/admin");
+      } else {
+        toast.error("Access Denied", {
+          description: "Only Admins can access the Admin Page",
+        });
+      }
     } catch (error) {
       console.log(error);
     } finally {
